@@ -556,6 +556,8 @@
 
     <!-- App js -->
     <script src="{{ URL::to('assets/js/app.js') }}"></script>
+    
     @yield('script')
+   
 </body>
 </html>

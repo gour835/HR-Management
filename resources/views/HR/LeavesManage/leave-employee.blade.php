@@ -102,7 +102,7 @@
                                     <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
                                         <a href="{{ url('hr/view/detail/leave/employee/'.Session::get('user_id')) }}" class="transition-all duration-150 ease-linear text-custom-500 hover:text-custom-600 user-id user_id">{{ $value->number_of_day }}</a>
                                     </td>
-                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $value->date_from }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $value->created_at?->format('F') }}</td>
                                     <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $value->date_to }}</td>
                                     <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $value->approved_by }}</td>
                                     <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
@@ -125,12 +125,63 @@
 
                         </tbody>
                     </table>
+
+                    
                 </div>
             </div>
-        </div>
+
+            <div class="card-body">
+                <h6 class="mb-3 text-15">Leaves Taken<h6>
+                <div id="demo" data-monthly_leaves='{!! json_encode($monthly_leaves) !!}'></div>
+            </div>
+</div>
     </div>
     <!-- End Page-content -->
-@section('script')
     
+@section('script')
+    <script>
+            let monthly_leaves = {!! json_encode($monthly_leaves) !!};
+            var options = {
+            // 1. CHART SETTINGS (Defines type and size)
+            chart: {
+                type: 'line', // Change this to 'line', 'area', 'pie', etc.
+                height: 350,
+                id: 'LeavesChart'
+            },
+
+            // 2. DATA SERIES (The actual numerical data)
+            series: [{
+                name: 'Leaves Taken',
+                data: [monthly_leaves.January,
+                      monthly_leaves.February,
+                      monthly_leaves.March,
+                      monthly_leaves.April,
+                      monthly_leaves.May,
+                      monthly_leaves.June,
+                      monthly_leaves.July,
+                      monthly_leaves.August,
+                      monthly_leaves.September,
+                      monthly_leaves.October,
+                      monthly_leaves.November,
+                      monthly_leaves.December,
+                       
+            ]
+            }],
+
+            // 3. X-AXIS (The categories/labels for the horizontal axis)
+            xaxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+            },
+
+            // 4. OPTIONAL: Title, Colors, etc.
+            title: {
+                text: 'Monthly leaves taken:'
+            }
+        };
+        let demo = document.getElementById("demo");
+        console.log(monthly_leaves);
+        var chart = new ApexCharts(demo, options);
+        chart.render();
+    </script>
 @endsection
 @endsection

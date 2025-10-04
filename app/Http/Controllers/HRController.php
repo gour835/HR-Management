@@ -237,8 +237,29 @@ class HRController extends Controller
         $annualLeave = LeaveInformation::where('leave_type','Annual Leave')->select('leave_days')->first();
        
         $leave = Leave::where('staff_id', Session::get('user_id'))->get();
+
         // $leaves = Leave::where('staff_id', Session::get('user_id'))->whereIn('leave_type')->get();
-        return view('HR.LeavesManage.leave-employee',compact('leave'));
+        
+        // 1. Initialize the array (ensure 'May' is included, as it was missing)
+        $monthly_leaves = [
+            'January' => 0, 'February' => 0, 'March' => 0, 'April' => 0, 'May' => 0,
+            'June' => 0, 'July' => 0, 'August' => 0, 'September' => 0,
+            'October' => 0, 'November' => 0, 'December' => 0
+        ];
+
+        // 2. Loop directly over the leave objects
+        foreach ($leave as $leav) {
+
+            $month_name = $leav->created_at->format('F');
+
+            // Use the month name as the key to increment the counter
+            
+            $monthly_leaves[$month_name]++;
+        }
+
+
+        
+        return view('HR.LeavesManage.leave-employee',compact('leave', 'monthly_leaves'));
     }
 
     /** create Leave Employee */
