@@ -94,7 +94,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($leave as $key => $value)
+                            @foreach($leaves as $key => $value)
                                 <tr>
                                     <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ ++$key }}</td>
                                     <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $value->leave_type }}</td>
@@ -170,7 +170,7 @@
 
             // 3. X-AXIS (The categories/labels for the horizontal axis)
             xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
             },
 
             // 4. OPTIONAL: Title, Colors, etc.

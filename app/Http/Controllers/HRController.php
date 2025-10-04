@@ -12,6 +12,7 @@ use App\Models\Holiday;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\LeaveInformation;
+use Carbon\Carbon;
 
 class HRController extends Controller
 {
@@ -236,30 +237,55 @@ class HRController extends Controller
     {
         $annualLeave = LeaveInformation::where('leave_type','Annual Leave')->select('leave_days')->first();
        
-        $leave = Leave::where('staff_id', Session::get('user_id'))->get();
+        $leaves = Leave::where('staff_id', Session::get('user_id'))->get();
 
         // $leaves = Leave::where('staff_id', Session::get('user_id'))->whereIn('leave_type')->get();
         
-        // 1. Initialize the array (ensure 'May' is included, as it was missing)
+        
         $monthly_leaves = [
             'January' => 0, 'February' => 0, 'March' => 0, 'April' => 0, 'May' => 0,
             'June' => 0, 'July' => 0, 'August' => 0, 'September' => 0,
             'October' => 0, 'November' => 0, 'December' => 0
         ];
 
-        // 2. Loop directly over the leave objects
-        foreach ($leave as $leav) {
+      
+        foreach ($leaves as $leave) {
+            //checking if leave is taken for multiple months
+            if($leave->number_of_day > 1){
+                //just checking if leave is taken within same month
+                if (Carbon::createFromFormat('d M, Y', $leave->date_to)->format('F') == Carbon::createFromFormat('d M, Y', $leave->date_from)->format('F')){
+                    $carbon_date = Carbon::createFromFormat('d M, Y', $leave->date_to);
+                    $month_name = $carbon_date->format('F');
+                    $monthly_leaves[$month_name] += (float) $leave->number_of_day;
+                }else{
+                    $first_month= Carbon::createFromFormat('d M, Y', $leave->date_from)->format('F');
+                    $first_month_date= Carbon::createFromFormat('d M, Y', $leave->date_from)->format('d');
+                    $first_month_leave= ( Carbon::now()->format('t')+1) - $first_month_date;
+                    
+                    //inserting into first month
+                    $carbon_date = Carbon::createFromFormat('d M, Y', $leave->date_from);
+                    $month_name = $carbon_date->format('F');
+                    $monthly_leaves[$month_name] += $first_month_leave;
 
-            $month_name = $leav->created_at->format('F');
+                    //inserting into second month
+                    $last_month_leave = $first_month_leave - ($leave->no_of_day);
+                    $carbon_date = Carbon::createFromFormat('d M, Y', $leave->date_to);
+                    $month_name = $carbon_date->format('F');
+                    $monthly_leaves[$month_name] += $last_month_leave;
 
-            // Use the month name as the key to increment the counter
+                }
+                
+            }else{
+                $carbon_date = Carbon::createFromFormat('d M, Y', $leave->date_to);
+                $month_name = $carbon_date->format('F');
+                $monthly_leaves[$month_name] += (float) $leave->number_of_day;
+            }
             
-            $monthly_leaves[$month_name]++;
         }
 
 
         
-        return view('HR.LeavesManage.leave-employee',compact('leave', 'monthly_leaves'));
+        return view('HR.LeavesManage.leave-employee',compact('leaves', 'monthly_leaves'));
     }
 
     /** create Leave Employee */
@@ -318,7 +344,52 @@ class HRController extends Controller
     /** leave HR */
     public function leaveHR()
     {
-        return view('HR.LeavesManage.leave-hr');
+        $leaves = Leave::all();
+
+        // $leaves = Leave::where('staff_id', Session::get('user_id'))->whereIn('leave_type')->get();
+        
+        
+        $monthly_leaves = [
+            'January' => 0, 'February' => 0, 'March' => 0, 'April' => 0, 'May' => 0,
+            'June' => 0, 'July' => 0, 'August' => 0, 'September' => 0,
+            'October' => 0, 'November' => 0, 'December' => 0
+        ];
+
+      
+        foreach ($leaves as $leave) {
+            //checking if leave is taken for multiple months
+            if($leave->number_of_day > 1){
+                //just checking if leave is taken within same month
+                if (Carbon::createFromFormat('d M, Y', $leave->date_to)->format('F') == Carbon::createFromFormat('d M, Y', $leave->date_from)->format('F')){
+                    $carbon_date = Carbon::createFromFormat('d M, Y', $leave->date_to);
+                    $month_name = $carbon_date->format('F');
+                    $monthly_leaves[$month_name] += (float) $leave->number_of_day;
+                }else{
+                    $first_month= Carbon::createFromFormat('d M, Y', $leave->date_from)->format('F');
+                    $first_month_date= Carbon::createFromFormat('d M, Y', $leave->date_from)->format('d');
+                    $first_month_leave= ( Carbon::now()->format('t')+1) - $first_month_date;
+                    
+                    //inserting into first month
+                    $carbon_date = Carbon::createFromFormat('d M, Y', $leave->date_from);
+                    $month_name = $carbon_date->format('F');
+                    $monthly_leaves[$month_name] += $first_month_leave;
+
+                    //inserting into second month
+                    $last_month_leave = $first_month_leave - ($leave->no_of_day);
+                    $carbon_date = Carbon::createFromFormat('d M, Y', $leave->date_to);
+                    $month_name = $carbon_date->format('F');
+                    $monthly_leaves[$month_name] += $last_month_leave;
+
+                }
+                
+            }else{
+                $carbon_date = Carbon::createFromFormat('d M, Y', $leave->date_to);
+                $month_name = $carbon_date->format('F');
+                $monthly_leaves[$month_name] += (float) $leave->number_of_day;
+            }
+            
+        }
+        return view('HR.LeavesManage.leave-hr', compact('monthly_leaves'));
     }
 
     /** attendance */

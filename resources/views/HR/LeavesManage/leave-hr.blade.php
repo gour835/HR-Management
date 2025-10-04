@@ -22,7 +22,7 @@
                         <div class="flex items-center gap-3 card-body">
                             <div class="flex items-center justify-center rounded-md size-12 text-15 bg-custom-100 text-custom-500 dark:bg-custom-500/20 shrink-0"><i data-lucide="file-bar-chart-2"></i></div>
                             <div class="grow">
-                                <h5 class="mb-1 text-16"><span class="counter-value" data-target="18">0</span>/<span class="counter-value" data-target="60">0</span></h5>
+                                <h5 class="mb-1 text-16"><span class="counter-value" data-target="19">0</span>/<span class="counter-value" data-target="60">0</span></h5>
                                 <p class="text-slate-500 dark:text-zink-200">Today/Presents Leave</p>
                             </div>
                         </div>
@@ -193,6 +193,11 @@
                         </tbody>
                     </table>
                 </div>
+                
+            </div>
+            <div class="card-body">
+                    <h6 class="mb-3 text-15">Leaves Taken<h6>
+                    <div id="demo" ></div>
             </div>
         </div>
         <!-- container-fluid -->
@@ -200,5 +205,49 @@
     <!-- End Page-content -->
 
 @section('script')
+     <script>
+            let monthly_leaves = {!! json_encode($monthly_leaves) !!};
+            var options = {
+            // 1. CHART SETTINGS (Defines type and size)
+            chart: {
+                type: 'line', // Change this to 'line', 'area', 'pie', etc.
+                height: 350,
+                id: 'LeavesChart'
+            },
+
+            // 2. DATA SERIES (The actual numerical data)
+            series: [{
+                name: 'Leaves Taken',
+                data: [monthly_leaves.January,
+                      monthly_leaves.February,
+                      monthly_leaves.March,
+                      monthly_leaves.April,
+                      monthly_leaves.May,
+                      monthly_leaves.June,
+                      monthly_leaves.July,
+                      monthly_leaves.August,
+                      monthly_leaves.September,
+                      monthly_leaves.October,
+                      monthly_leaves.November,
+                      monthly_leaves.December,
+                       
+            ]
+            }],
+
+            // 3. X-AXIS (The categories/labels for the horizontal axis)
+            xaxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+            },
+
+            // 4. OPTIONAL: Title, Colors, etc.
+            title: {
+                text: 'Monthly leaves taken:'
+            }
+        };
+        let demo = document.getElementById("demo");
+        console.log(monthly_leaves);
+        var chart = new ApexCharts(demo, options);
+        chart.render();
+    </script>
 @endsection
 @endsection
