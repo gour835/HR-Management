@@ -27,10 +27,11 @@
                                             <label for="leaveType" class="inline-block mb-2 text-base font-medium">Leave Type</label>
                                             <select name="leave_type" id="leave_type" class="leave_type form-input border-slate-200 focus:outline-none focus:border-custom-500" data-choices="" data-choices-search-false="">
                                                 <option value="">Select Leave Type</option>
-                                                <option value="Medical Leave">Medical Leave</option>
-                                                <option value="Casual Leave">Casual Leave</option>
-                                                <option value="Sick Leave">Sick Leave</option>
-                                                <option value="Annual Leave">Annual Leave</option>
+                                                @foreach ($leav as $key => $value)
+                                                   <option value="{{ $key }}">{{ $key }}</option> 
+                                                @endforeach
+                                                
+                                            
                                             </select>
                                             @error('leave_type')
                                                 <span class="invalid-feedback" role="alert">
@@ -111,10 +112,10 @@
                             <div>
                                 <table class="w-full mb-0">
                                     <tbody>
-                                        @foreach($leaveInformation as $key => $value)
+                                        @foreach($leav as $key => $value)
                                             <tr>
-                                                <td class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $value->leave_type }}</td>
-                                                <th class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $value->leave_days }}</th>
+                                                <td class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $key }}</td>
+                                                <th class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $value }}</th>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -131,6 +132,7 @@
     <script>
         // Define the URL for the AJAX request
         var url = "{{ route('hr/get/information/leave') }}";
+        
         
         // Function to handle leave type change
         function handleLeaveTypeChange() {
