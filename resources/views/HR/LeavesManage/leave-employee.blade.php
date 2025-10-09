@@ -58,7 +58,7 @@
                         <div class="flex items-center gap-3 card-body">
                             <div class="flex items-center justify-center rounded-md size-12 text-sky-500 bg-sky-100 text-15 dark:bg-sky-500/20 shrink-0"><i data-lucide="anchor"></i></div>
                             <div class="grow">
-                                <h5 class="mb-1 text-16"><span class="counter-value" data-target="11">0</span></h5>
+                                <h5 class="mb-1 text-16"><span class="counter-value" data-target="">0</span></h5>
                                 <p class="text-slate-500 dark:text-zink-200">Remaining Leave</p>
                             </div>
                         </div>
@@ -132,7 +132,7 @@
 
             <div class="card-body">
                 <h6 class="mb-3 text-15">Leaves Taken<h6>
-                <div id="demo" data-monthly_leaves='{!! json_encode($monthly_leaves) !!}'></div>
+                <div id="demo" ></div>
             </div>
 </div>
     </div>
@@ -179,8 +179,9 @@
             }
         };
         let demo = document.getElementById("demo");
-        console.log(monthly_leaves);
+        
         var chart = new ApexCharts(demo, options);
+        
         chart.render();
     </script>
 @endsection

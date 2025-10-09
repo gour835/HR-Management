@@ -40,7 +40,7 @@ class HRController extends Controller
 
                     $monthly_leaves[$month_name] += (float) $leave->number_of_day;
                 }else{
-                    $first_month= Carbon::createFromFormat('d M, Y', $leave->date_from)->format('F');
+                    
                     $first_month_date= Carbon::createFromFormat('d M, Y', $leave->date_from)->format('d');
                     // $first_month_leave= ( Carbon::now()->format('t')+1) - $first_month_date;
                     $first_month_leave = (
@@ -264,11 +264,25 @@ class HRController extends Controller
 
             $numberOfDay = $request->number_of_day;
             $leaveType   = $request->leave_type;
+            $leaveDay=0;
+            $user_id = Session::get('user_id');
+            $unique_cookie_name = 'leavesUpdate_'. $user_id;
             
-            $leaveDay = LeaveInformation::where('leave_type', $leaveType)->first();
+            $cookie_value = request()->cookie($unique_cookie_name);
+            // $leaveDay = LeaveInformation::where('leave_type', $leaveType)->first();
+            $leaves = json_decode($cookie_value, true) ?? [
+                'Medical Leave' => 4,
+                'Casual Leave' => 8,
+                'Sick Leave' => 5,
+                'Annual Leave' => 12,
+            ];
             
-            if ($leaveDay) {
-                $days = $leaveDay->leave_days - ($numberOfDay ?? 0);
+            if (is_array($leaves) && isset($leaves[$leaveType])) {
+                // Directly assign the number of days for the specific leave type
+                $leaveDay = $leaves[$leaveType];
+            }
+            if ($leaveDay > 0) {
+                $days = $leaveDay - ($numberOfDay ?? 0);
             } else {
                 $days = 0; // Handle case if leave type doesn't exist
             }
@@ -293,7 +307,7 @@ class HRController extends Controller
     /** leave Employee */
     public function leaveEmployee()
     {
-        $annualLeave = LeaveInformation::where('leave_type','Annual Leave')->select('leave_days')->first();
+        // $annualLeave = LeaveInformation::where('leave_type','Annual Leave')->select('leave_days')->first();
     
         //getting the info about currently logged in user
         $leaves = Leave::where('staff_id', Session::get('user_id'))->get();
@@ -311,11 +325,19 @@ class HRController extends Controller
         // $leaveInformation = LeaveInformation::all();
     
         //accessing reamaining leaves data
-        $cookie_value = request()->cookie('leavesUpdate');
+        $user_id = Session::get('user_id');
+        $unique_cookie_name = 'leavesUpdate_'. $user_id;
         
-        $leav = json_decode($cookie_value, true);
+        $cookie_value = request()->cookie($unique_cookie_name);
         
-        $remaining_leaves=Leave::where('staff_id', Session::get('user_id'))->get();
+        $leav = json_decode($cookie_value, true) ?? [
+        'Medical Leave' => 4,
+        'Casual Leave' => 8,
+        'Sick Leave' => 5,
+        'Annual Leave' => 12,
+    ];
+        
+        $remaining_leaves=Leave::where('staff_id', $user_id)->get();
         return view('HR.LeavesManage.create-leave-employee',compact('remaining_leaves', 'leav'));
     }
 
@@ -329,26 +351,39 @@ class HRController extends Controller
             'reason'     => 'required',
         ]);
         //remaining leaves logic
-        $leaves=['Medical Leave' =>	4,
-                 'Casual Leave' => 8,
-                 'Sick Leave' => 5,
-                 'Annual Leave' => 12,
-                 
-                ];
-        if($request->cookie('leavesUpdate')){
-            $leaves=json_decode($request->cookie('leavesUpdate'), true);
+        // Get the unique identifier for the logged-in employee
+        $user_id = Session::get('user_id'); 
+        
+    
+        // Create a unique cookie name using the user_id
+        $unique_cookie_name = 'leavesUpdate_'. $user_id;
+
+        // ... remaining leaves logic ...
+        $leaves=['Medical Leave' => 4,
+            'Casual Leave' => 8,
+            'Sick Leave' => 5,
+            'Annual Leave' => 12,
+            
+        ];
+        
+        // Check for the unique cookie for this specific user
+        if($request->cookie($unique_cookie_name)){ 
+            $leaves=json_decode($request->cookie($unique_cookie_name), true);
         }
         
         if($attributes){
-            $leaves[$request->leave_type] = $request->remaining_leave;
-           
+            // Ensure $request->remaining_leave exists before using it
+            if ($request->has('remaining_leave')) { 
+                $leaves[$request->leave_type] = $request->remaining_leave;
+            }
         }
+
 
 
         $json_data = json_encode($leaves);
         $minutes = 525600;
         $cookies = cookie(
-            'leavesUpdate',
+            $unique_cookie_name,
             $json_data,
             $minutes,
             $path = '/',
@@ -363,7 +398,7 @@ class HRController extends Controller
         try {
            
             $save  = new Leave;
-            $save->staff_id         = Session::get('user_id');
+            $save->staff_id         = $user_id;
             $save->employee_name    = Session::get('name');
             $save->leave_type       = $request->leave_type;
             $save->remaining_leave  = $request->remaining_leave;
@@ -377,6 +412,7 @@ class HRController extends Controller
             $save->save();
     
             flash()->success('Apply Leave successfully :)');
+            //redirecting with cookies
             return redirect()->back()->withCookie($cookies);
         } catch (\Exception $e) {
             \Log::error($e); // Log the error
@@ -406,7 +442,7 @@ class HRController extends Controller
         
         $monthly_leaves = $this->ChartLeaves($leaves);
 
-        return view('HR.LeavesManage.leave-hr', compact('monthly_leaves'));
+        return view('HR.LeavesManage.leave-hr', compact('monthly_leaves', 'leaves'));
     }
 
     /** attendance */

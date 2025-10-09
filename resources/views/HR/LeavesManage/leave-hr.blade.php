@@ -95,16 +95,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">01</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Willie Torres</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Medical Leave</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Going to Hospital</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">02</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">11 Oct, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">12 Oct, 2023</td>
+                            @foreach ($leaves as $leave)
+                                <tr>
+                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $leave->id }}</td>
+                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $leave->employee_name }}</td>
+                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $leave->leave_type }}</td>
+                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $leave->reason }}</td>
+                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $leave->number_of_days }}</td>
+                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $leave->date_from }}</td>
+                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ $leave->date_to }}</td>
                                 <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <span class="px-2.5 py-0.5 inline-block text-xs font-medium rounded border bg-green-100 border-green-100 text-green-500 dark:bg-green-400/20 dark:border-transparent">Approved</span>
+                                    <span class="px-2.5 py-0.5 inline-block text-xs font-medium rounded border bg-green-100 border-green-100 text-green-500 dark:bg-green-400/20 dark:border-transparent">{{ $leave->status }}</span>
                                 </td>
                                 <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
                                     <div class="flex gap-2">
@@ -114,82 +115,9 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">02</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Patricia Garcia</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Casual Leave</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Going to Family Function</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">01</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">07 Sept, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">07 Sept, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <span class="px-2.5 py-0.5 inline-block text-xs font-medium rounded border bg-yellow-100 border-yellow-100 text-yellow-500 dark:bg-yellow-400/20 dark:border-transparent">Pending</span>
-                                </td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <div class="flex gap-2">
-                                        <a href="#!" class="flex items-center justify-center transition-all duration-200 ease-linear rounded-md size-8 text-slate-500 bg-slate-100 hover:text-white hover:bg-slate-500 dark:bg-zink-600 dark:text-zink-200 dark:hover:text-white dark:hover:bg-zink-500"><i data-lucide="pencil" class="size-4"></i></a>
-                                        <a href="#!" class="flex items-center justify-center text-green-500 transition-all duration-200 ease-linear bg-green-100 rounded-md size-8 hover:text-white hover:bg-green-500 dark:bg-green-500/20 dark:hover:bg-green-500"><i data-lucide="check" class="size-4"></i></a>
-                                        <a href="#!" data-modal-target="deleteModal" class="flex items-center justify-center text-red-500 transition-all duration-200 ease-linear bg-red-100 rounded-md size-8 hover:text-white hover:bg-red-500 dark:bg-red-500/20 dark:hover:bg-red-500"><i data-lucide="trash-2" class="size-4"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">03</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Juliette Fecteau</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Casual Leave</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Going to Holiday</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">06</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">11 Jun, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">16 Jun, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <span class="px-2.5 py-0.5 inline-block text-xs font-medium rounded border bg-purple-100 border-purple-100 text-purple-500 dark:bg-purple-400/20 dark:border-transparent">New</span>
-                                </td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <div class="flex gap-2">
-                                        <a href="#!" class="flex items-center justify-center transition-all duration-200 ease-linear rounded-md size-8 text-slate-500 bg-slate-100 hover:text-white hover:bg-slate-500 dark:bg-zink-600 dark:text-zink-200 dark:hover:text-white dark:hover:bg-zink-500"><i data-lucide="pencil" class="size-4"></i></a>
-                                        <a href="#!" class="flex items-center justify-center text-green-500 transition-all duration-200 ease-linear bg-green-100 rounded-md size-8 hover:text-white hover:bg-green-500 dark:bg-green-500/20 dark:hover:bg-green-500"><i data-lucide="check" class="size-4"></i></a>
-                                        <a href="#!" data-modal-target="deleteModal" class="flex items-center justify-center text-red-500 transition-all duration-200 ease-linear bg-red-100 rounded-md size-8 hover:text-white hover:bg-red-500 dark:bg-red-500/20 dark:hover:bg-red-500"><i data-lucide="trash-2" class="size-4"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">04</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Thomas Hatfield</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Sick Leave</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Attend Birthday party</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">01</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">15 July, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">15 July, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <span class="px-2.5 py-0.5 inline-block text-xs font-medium rounded border bg-green-100 border-green-100 text-green-500 dark:bg-green-400/20 dark:border-transparent">Approved</span>
-                                </td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <div class="flex gap-2">
-                                        <a href="#!" class="flex items-center justify-center transition-all duration-200 ease-linear rounded-md size-8 text-slate-500 bg-slate-100 hover:text-white hover:bg-slate-500 dark:bg-zink-600 dark:text-zink-200 dark:hover:text-white dark:hover:bg-zink-500"><i data-lucide="pencil" class="size-4"></i></a>
-                                        <a href="#!" class="flex items-center justify-center text-green-500 transition-all duration-200 ease-linear bg-green-100 rounded-md size-8 hover:text-white hover:bg-green-500 dark:bg-green-500/20 dark:hover:bg-green-500"><i data-lucide="check" class="size-4"></i></a>
-                                        <a href="#!" data-modal-target="deleteModal" class="flex items-center justify-center text-red-500 transition-all duration-200 ease-linear bg-red-100 rounded-md size-8 hover:text-white hover:bg-red-500 dark:bg-red-500/20 dark:hover:bg-red-500"><i data-lucide="trash-2" class="size-4"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">05</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Willie Torres</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Sick Leave</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">Personal</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">02</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">19 Aug, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">20 Aug, 2023</td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <span class="px-2.5 py-0.5 inline-block text-xs font-medium rounded border bg-red-100 border-red-100 text-red-500 dark:bg-red-400/20 dark:border-transparent">Declined</span>
-                                </td>
-                                <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">
-                                    <div class="flex gap-2">
-                                        <a href="#!" class="flex items-center justify-center transition-all duration-200 ease-linear rounded-md size-8 text-slate-500 bg-slate-100 hover:text-white hover:bg-slate-500 dark:bg-zink-600 dark:text-zink-200 dark:hover:text-white dark:hover:bg-zink-500"><i data-lucide="pencil" class="size-4"></i></a>
-                                        <a href="#!" class="flex items-center justify-center text-green-500 transition-all duration-200 ease-linear bg-green-100 rounded-md size-8 hover:text-white hover:bg-green-500 dark:bg-green-500/20 dark:hover:bg-green-500"><i data-lucide="check" class="size-4"></i></a>
-                                        <a href="#!" data-modal-target="deleteModal" class="flex items-center justify-center text-red-500 transition-all duration-200 ease-linear bg-red-100 rounded-md size-8 hover:text-white hover:bg-red-500 dark:bg-red-500/20 dark:hover:bg-red-500"><i data-lucide="trash-2" class="size-4"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforeach
+                            
+                            
                         </tbody>
                     </table>
                 </div>

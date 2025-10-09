@@ -112,12 +112,15 @@
                             <div>
                                 <table class="w-full mb-0">
                                     <tbody>
-                                        @foreach($leav as $key => $value)
+                                      @isset($leav)
+                                          @foreach($leav as $key => $value)
                                             <tr>
                                                 <td class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $key }}</td>
                                                 <th class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $value }}</th>
                                             </tr>
                                         @endforeach
+                                      @endisset
+                                        
                                     </tbody>
                                 </table>
                             </div>
