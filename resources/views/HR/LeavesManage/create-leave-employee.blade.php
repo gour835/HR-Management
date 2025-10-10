@@ -27,11 +27,27 @@
                                             <label for="leaveType" class="inline-block mb-2 text-base font-medium">Leave Type</label>
                                             <select name="leave_type" id="leave_type" class="leave_type form-input border-slate-200 focus:outline-none focus:border-custom-500" data-choices="" data-choices-search-false="">
                                                 <option value="">Select Leave Type</option>
-                                                @foreach ($leav as $key => $value)
-                                                   <option value="{{ $key }}">{{ $key }}</option> 
-                                                @endforeach
                                                 
-                                            
+                                                    {{-- Use Blade's foreach directive --}}
+                                                    @foreach($leav as $key => $value)
+                                                        
+                                                        {{-- Filter out non-leave fields --}}
+                                                        
+                                                            
+                                                            @php
+                                                                // Use Str::of() to convert 'annual_leave' to 'Annual Leave'
+                                                                $displayName = Illuminate\Support\Str::of($key)
+                                                                                                    ->replace('_', ' ')
+                                                                                                    ->title();
+                                                            @endphp
+                                                            
+                                                            
+                                                            <option value="{{ $key }}">{{ $displayName }}</option>
+                                                            
+                                                       
+                                                    @endforeach
+                                               
+                                               
                                             </select>
                                             @error('leave_type')
                                                 <span class="invalid-feedback" role="alert">
@@ -113,14 +129,29 @@
                                 <table class="w-full mb-0">
                                     <tbody>
                                       @isset($leav)
-                                          @foreach($leav as $key => $value)
-                                            <tr>
-                                                <td class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $key }}</td>
-                                                <th class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $value }}</th>
-                                            </tr>
-                                        @endforeach
+
+                                            @foreach($leav as $key => $value)
+                                                        
+                                                        {{-- Filter out non-leave fields --}}
+                                                        @if ($key != 'staff_id' and $key != 'employee_name' and $key != 'id' and $key != 'created_at' and $key != 'updated_at')
+                                                            
+                                                            @php
+                                                                // Use Str::of() to convert 'annual_leave' to 'Annual Leave'
+                                                                $displayName = Illuminate\Support\Str::of($key)
+                                                                                                    ->replace('_', ' ')
+                                                                                                    ->title();
+                                                            @endphp
+                                                            
+                                                            <tr>
+                                                                <td class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $displayName }}</td>
+                                                                <th class="px-3.5 py-2.5 first:pl-0 last:pr-0 border-y border-transparent">{{ $value }}</th>
+                                                            </tr>
+                                                           
+                                                            
+                                                        @endif
+                                                    @endforeach
+                                                
                                       @endisset
-                                        
                                     </tbody>
                                 </table>
                             </div>

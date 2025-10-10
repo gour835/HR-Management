@@ -12,9 +12,11 @@ use App\Models\Holiday;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\LeaveInformation;
+use App\Models\LeavesUpdate;
 use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session as SessionSession;
 use Illuminate\Database\Eloquent\Casts\Json;
+use Illuminate\Support\Str;
 
 class HRController extends Controller
 {
@@ -266,18 +268,16 @@ class HRController extends Controller
             $leaveType   = $request->leave_type;
             $leaveDay=0;
             $user_id = Session::get('user_id');
-            $unique_cookie_name = 'leavesUpdate_'. $user_id;
             
-            $cookie_value = request()->cookie($unique_cookie_name);
-            // $leaveDay = LeaveInformation::where('leave_type', $leaveType)->first();
-            $leaves = json_decode($cookie_value, true) ?? [
-                'Medical Leave' => 4,
-                'Casual Leave' => 8,
-                'Sick Leave' => 5,
-                'Annual Leave' => 12,
-            ];
+            $leaves = LeavesUpdate::where('staff_id', $user_id)->first();
+       
+        if($leaves){
+            $leaves = $leaves->only(['medical_leave', 'casual_leave', 'sick_leave', 'annual_leave']);
+        }else{
+            $leaves =  ['medical_leave' => 4, 'casual_leave' => 8, 'sick_leave' => 5, 'annual_leave' => 12, ];
+        }
             
-            if (is_array($leaves) && isset($leaves[$leaveType])) {
+            if (is_array($leaves)) {
                 // Directly assign the number of days for the specific leave type
                 $leaveDay = $leaves[$leaveType];
             }
@@ -330,13 +330,14 @@ class HRController extends Controller
         
         $cookie_value = request()->cookie($unique_cookie_name);
         
-        $leav = json_decode($cookie_value, true) ?? [
-        'Medical Leave' => 4,
-        'Casual Leave' => 8,
-        'Sick Leave' => 5,
-        'Annual Leave' => 12,
-    ];
-        
+      $leav = LeavesUpdate::where('staff_id', $user_id)->first();
+       
+        if($leav){
+            $leav = $leav->only(['medical_leave', 'casual_leave', 'sick_leave', 'annual_leave']);
+        }else{
+            $leav =  ['medical_leave' => 4, 'casual_leave' => 8, 'sick_leave' => 5, 'annual_leave' => 12, ];
+        }
+        // dd($leav);
         $remaining_leaves=Leave::where('staff_id', $user_id)->get();
         return view('HR.LeavesManage.create-leave-employee',compact('remaining_leaves', 'leav'));
     }
@@ -349,50 +350,61 @@ class HRController extends Controller
             'date_from'  => 'required',
             'date_to'    => 'required',
             'reason'     => 'required',
+            'remaining_leave'   => 'nullable|numeric'
         ]);
         //remaining leaves logic
         // Get the unique identifier for the logged-in employee
-        $user_id = Session::get('user_id'); 
+        $user_id = Session::get('user_id');
+        $user_name = Session::get('employee_name');
         
     
-        // Create a unique cookie name using the user_id
-        $unique_cookie_name = 'leavesUpdate_'. $user_id;
-
-        // ... remaining leaves logic ...
-        $leaves=['Medical Leave' => 4,
-            'Casual Leave' => 8,
-            'Sick Leave' => 5,
-            'Annual Leave' => 12,
+       
+        // // ... remaining leaves logic ...
+        $leaves=[
+            'staff_id' => $user_id,
+            'employee_name' => $user_name,
+            'medical_leave' => 4,
+            'casual_leave' => 8,
+            'sick_leave' => 5,
+            'annual_leave' => 12,
             
         ];
         
-        // Check for the unique cookie for this specific user
-        if($request->cookie($unique_cookie_name)){ 
-            $leaves=json_decode($request->cookie($unique_cookie_name), true);
-        }
+        
+        
+       
         
         if($attributes){
             // Ensure $request->remaining_leave exists before using it
             if ($request->has('remaining_leave')) { 
-                $leaves[$request->leave_type] = $request->remaining_leave;
+                 // 1> checking if there is any record for current user in data base
+            $RemainingLeaves = LeavesUpdate::where('staff_id', $user_id)->first();
+            if ($RemainingLeaves){
+                $RemainingLeaves->update([
+                Str::snake($attributes['leave_type']) => $attributes['remaining_leave']
+                ]);
+            }else{
+                $RemainingLeaves = new LeavesUpdate;
+                $leaves[Str::snake($attributes['leave_type'])] = $attributes['remaining_leave'];
+                $RemainingLeaves->create($leaves);
             }
         }
 
 
 
-        $json_data = json_encode($leaves);
-        $minutes = 525600;
-        $cookies = cookie(
-            $unique_cookie_name,
-            $json_data,
-            $minutes,
-            $path = '/',
-            $domain = null,
-            $secure = false,
-            $httpOnly = true,
-            $raw = false,
-            $sameSite = 'lax' // or 'strict' or 'none'
-        );
+        // $json_data = json_encode($leaves);
+        // $minutes = 525600;
+        // $cookies = cookie(
+        //     $unique_cookie_name,
+        //     $json_data,
+        //     $minutes,
+        //     $path = '/',
+        //     $domain = null,
+        //     $secure = false,
+        //     $httpOnly = true,
+        //     $raw = false,
+        //     $sameSite = 'lax' // or 'strict' or 'none'
+        // );
 
         
         try {
@@ -413,13 +425,15 @@ class HRController extends Controller
     
             flash()->success('Apply Leave successfully :)');
             //redirecting with cookies
-            return redirect()->back()->withCookie($cookies);
+            // return redirect()->back()->withCookie($cookies);
+            return redirect()->back();
         } catch (\Exception $e) {
             \Log::error($e); // Log the error
             flash()->error('Failed Apply Leave :)');
             return redirect()->back();
         }
     }
+}
 
     /** view detail leave employee */
     public function viewDetailLeave($staff_id)
